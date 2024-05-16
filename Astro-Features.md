@@ -336,3 +336,510 @@ export default Counter;
     <Counter client:visible transition:persist />
   </header>
 ```
+
+## Clon de Spotify DESDE CERO con Astro 3, React JS, Svelte y TailwindCSS -> Astro Features
+
+- Dentro del `Layout.astro` podemos definir el Layout de Spotify mediante **Grid Areas**, haciendo uso de la etiqueta `<style>` para definir los estilos del Layout dentro del Scope del archivo y la directiva `is:global` para que esos estilos afecten a todo el proyecto. Luego asignamos el nombre de cada area a cada elemento mediante directivas de TailwindCSS:
+
+```css
+  <style>
+    #app {
+      display: grid;
+      grid-template-areas:
+        "aside main main"
+        "player player player";
+      grid-template-columns: 350px 1fr;
+      grid-template-rows: 1fr auto;
+    }
+  </style>
+
+  <style is:global>
+    html {
+      font-family: "CircularStd", system-ui, sans-serif;
+      background: #010101;
+      color: white;
+    }
+
+    @font-face {
+      font-family: "CircularStd";
+      src: url("/fonts/CircularStd-Medium.woff2") format("woff2");
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
+```
+
+```astro
+  <div id="app" class="relative h-screen p-2 gap-2">
+    <aside class="[grid-area:aside] flex-col flex overflow-y-auto">
+      <AsideMenu />
+    </aside>
+
+    <main
+      class="[grid-area:main] rounded-lg bg-zinc-900 overflow-y-auto w-full"
+    >
+      <slot />
+    </main>
+
+    <footer class="[grid-area:player] h-[80px]">
+      <Player client:load transition:name="media-player" transition:persist />
+    </footer>
+  </div>
+```
+
+- Crear un Componente de Astro para cada enlace del AsideMenu y evitar asi la repeticion de codigo:
+
+```astro
+  ---
+  interface Props {
+    href?: string
+  }
+
+  const { href } = Astro.props
+  ---
+
+  <li>
+    <a
+      class="flex gap-4 text-zinc-400 hover:text-zinc-100 items-center py-3 px-5 font-medium transition duration-300"
+      href={href}
+    >
+      <slot />
+    </a>
+  </li>
+```
+
+- Modificar el archivo de `tsconfig.json` para poder hacer uso de los Alias y evitar las rutas relativas:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/components": ["src/components/*"],
+      "@/icons": ["src/icons/*"],
+      "@/lib": ["src/lib/*"]
+    }
+  }
+}
+```
+
+- Para mejoras de SEO utilizar la etiqueta `<picture>` para envolver imagenes y poder definir diferentes tamaños de imagenes para diferentes dispositivos, ademas de la etiqueta `<source>` para definir diferentes formatos de imagenes. Utilizar la clase `truncate` de TailwindCSS para que si el texto no entra completo agregue puntos suspensivos:
+
+```astro
+  ---
+  import type { Playlist } from "@/lib/data"
+
+  interface Props {
+    playlist: Playlist
+  }
+
+  const { playlist } = Astro.props
+  const { id, cover, title, artists, color } = playlist
+
+  const artistsString = artists.join(", ")
+  ---
+  <picture>
+    <source
+      srcset="/images/spotify/spotify-logo.webp"
+      type="image/webp"
+    />
+    <img
+      src="/images/spotify/spotify-logo.png"
+      alt="Spotify Logo"
+      class="w-12 h-12"
+    />
+  </picture>
+
+  <a
+    href={`/playlist/${id}`}
+    class="playlist-item flex relative p-2 overflow-hidden items-center gap-5 rounded-md hover:bg-zinc-800"
+  >
+    <picture class="h-12 w-12 flex-none">
+      <img
+        src={cover}
+        alt={`Cover of ${title} by ${artistsString}`}
+        class="object-cover w-full h-full rounded-md"
+      />
+    </picture>
+
+    <div class="flex flex-auto flex-col truncate">
+      <h4 class="text-white text-sm">
+        {title}
+      </h4>
+
+      <span class="text-xs text-gray-400">
+        {artistsString}
+      </span>
+    </div>
+  </a>
+```
+
+- Gradiente de fondo para tener un efecto de transicion en el fondo de la aplicacion:
+
+```astro
+  ---
+  import Layout from "../layouts/Layout.astro"
+  import PlayListItemCard from "@/components/PlayListItemCard.astro"
+  import { playlists } from "@/lib/data"
+  import Greeting from "@/components/Greeting.svelte"
+  ---
+
+  <Layout title="Spotify Clone">
+    <div
+      id="playlist-container"
+      class="relative transition-all duration-1000 bg-green-600"
+    >
+      <!-- <PageHeader /> -->
+
+      <div class="relative z-10 px-6 pt-10">
+        <Greeting />
+        <div class="flex flex-wrap mt-6 gap-4">
+          {playlists.map((playlist) => <PlayListItemCard playlist={playlist} />)}
+        </div>
+
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/80 -z-[1]"
+        >
+        </div>
+      </div>
+
+      <style></style>
+    </div>
+  </Layout>
+```
+
+- Para utilizar las View Transitions de Astro y definir que imagen vamos a transicionar a la siguiente pagina, utilizamos la directiva de Astro de `transition:name=`, ademas debemos establecer el mismo enlace dentro de las paginas para que cada elemento sepa donde ubicarse:
+
+```astro
+  ---
+  import type { Playlist } from "@/lib/data"
+  import { CardPlayButton } from "./CardPlayButton"
+
+  interface Props {
+    playlist: Playlist
+  }
+
+  const { playlist } = Astro.props
+  const { id, cover, title, artists, color } = playlist
+
+  const artistsString = artists.join(", ")
+  ---
+
+  <article
+    class="group relative hover:bg-zinc-800 shadow-lg hover:shadow-xl bg-zinc-500/30 rounded-md ransi transition-all duration-300"
+  >
+    <div
+      class=`absolute right-4 bottom-20 translate-y-4
+      transition-all duration-500 opacity-0
+      group-hover:translate-y-0 group-hover:opacity-100
+      z-10
+    `
+    >
+      <CardPlayButton id={id} client:visible />
+    </div>
+
+    <a
+      href={`/playlist/${id}`}
+      class="playlist-item transition-all duration-300 flex relative p-2 overflow-hidden gap-2 pb-6 rounded-md w-44 flex-col"
+      transition:name=`playlist ${id} box`
+    >
+      <picture class="aspect-square w-full h-auto flex-none">
+        <img
+          src={cover}
+          alt={`Cover of ${title} by ${artistsString}`}
+          class="object-cover w-full h-full rounded-md"
+          transition:name=`playlist ${id} image`
+        />
+      </picture>
+
+      <div class="flex flex-auto flex-col px-2">
+        <h4 class="text-white text-sm" transition:name=`playlist ${id} title`>
+          {title}
+        </h4>
+
+        <span
+          class="text-xs text-gray-400"
+          transition:name=`playlist ${id} artists`
+        >
+          {artistsString}
+        </span>
+      </div>
+    </a>
+  </article>
+```
+
+```astro
+---
+  import MusicsTable from "@/components/MusicsTable.astro"
+  import Layout from "../../layouts/Layout.astro"
+  import { CardPlayButton } from "@/components/CardPlayButton"
+  import { allPlaylists, songs } from "@/lib/data"
+
+  const { id } = Astro.params
+
+  const playlist = allPlaylists.find((playlist) => playlist.id === id)
+  const playListSongs = songs.filter((song) => song.albumId === playlist?.albumId)
+  ---
+
+  <Layout title="Spotify Clone">
+    <div
+      id="playlist-container"
+      class="relative flex flex-col h-full bg-zinc-900 overflow-x-hidden"
+      transition:name=`playlist ${id} box`
+    >
+      <!-- <PageHeader /> -->
+
+      <header class="flex flex-row gap-8 px-6 mt-12">
+        <picture class="aspect-square w-52 h-52 flex-none">
+          <img
+            src={playlist?.cover}
+            alt={`Cover of ${playlist?.title}`}
+            class="object-cover w-full h-full shadow-lg"
+            transition:name=`playlist ${playlist?.id} image`
+          />
+        </picture>
+
+        <div class="flex flex-col justify-between">
+          <h2 class="flex flex-1 items-end">Playlist</h2>
+          <div>
+            <h1 class="text-5xl font-bold block text-white">
+              {playlist?.title}
+              <span transition:name=`playlist ${playlist?.id} title`></span>
+            </h1>
+          </div>
+
+          <div class="flex-1 flex items-end">
+            <div class="text-sm text-gray-300 font-normal">
+              <div transition:name=`playlist ${playlist?.id} artists`>
+                <span>{playlist?.artists.join(", ")}</span>
+              </div>
+              <p class="mt-1">
+                <span class="text-white">{playListSongs.length} canciones</span>,
+                3 h aproximadamente
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="pl-6 pt-6">
+        <CardPlayButton client:load id={id} size="large" />
+      </div>
+
+      <div class="relative z-10 px-6 pt-10"></div>
+
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/80 -z-[1]"
+      >
+      </div>
+
+      <section class="p-6">
+        <MusicsTable songs={playListSongs} />
+      </section>
+    </div>
+  </Layout>
+```
+
+- Para Compenentes Interactivos al estar utilizando el Modo Server de Astro para SSR, debemos utilizar la directiva `client:load` para que el componente se ejecute en el cliente y no en el servidor, ademas de la directiva `transition:persist` para que el estado del componente persista al cambiar de pagina. Podria utilizarse la directiva `client:visible` para que el componente se ejecute solo cuando sea visible en la pantalla haciendo uso del Lazy Loading, pero siempre esta visible por lo cual no es necesario:
+
+```astro
+  ---
+  import { Player } from "@/components/Player"
+  import AsideMenu from "../components/AsideMenu.astro"
+  import { ViewTransitions } from "astro:transitions"
+
+  interface Props {
+    title: string
+  }
+
+  const { title } = Astro.props
+  ---
+
+  <!doctype html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="description" content="Astro description" />
+      <meta name="viewport" content="width=device-width" />
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <meta name="generator" content={Astro.generator} />
+      <title>{title}</title>
+      <ViewTransitions fallback="none" />
+    </head>
+    <body>
+      <div id="app" class="relative h-screen p-2 gap-2">
+        <aside class="[grid-area:aside] flex-col flex overflow-y-auto">
+          <AsideMenu />
+        </aside>
+
+        <main
+          class="[grid-area:main] rounded-lg bg-zinc-900 overflow-y-auto w-full"
+        >
+          <slot />
+        </main>
+
+        <footer class="[grid-area:player] h-[80px]">
+          <Player client:load transition:name="media-player" transition:persist />
+        </footer>
+      </div>
+      <style>
+        #app {
+          display: grid;
+          grid-template-areas:
+            "aside main main"
+            "player player player";
+          grid-template-columns: 350px 1fr;
+          grid-template-rows: 1fr auto;
+        }
+      </style>
+
+      <style is:global>
+        html {
+          font-family: "CircularStd", system-ui, sans-serif;
+          background: #010101;
+          color: white;
+        }
+      </style>
+    </body>
+  </html>
+```
+
+- Agregar estilos por Grupos con TailwindCSS para que al hacer hover aparezca desde abajo el icono de Play o Pause:
+
+```astro
+  ---
+  import type { Playlist } from "@/lib/data"
+  import { CardPlayButton } from "./CardPlayButton"
+
+  interface Props {
+    playlist: Playlist
+  }
+
+  const { playlist } = Astro.props
+  const { id, cover, title, artists, color } = playlist
+
+  const artistsString = artists.join(", ")
+  ---
+
+  <article
+    class="group relative hover:bg-zinc-800 shadow-lg hover:shadow-xl bg-zinc-500/30 rounded-md ransi transition-all duration-300"
+  >
+    <div
+      class=`absolute right-4 bottom-20 translate-y-4
+      transition-all duration-500 opacity-0
+      group-hover:translate-y-0 group-hover:opacity-100
+      z-10
+    `
+    >
+      <CardPlayButton id={id} client:visible />
+    </div>
+
+    <a
+      href={`/playlist/${id}`}
+      class="playlist-item transition-all duration-300 flex relative p-2 overflow-hidden gap-2 pb-6 rounded-md w-44 flex-col"
+      transition:name=`playlist ${id} box`
+    >
+      <picture class="aspect-square w-full h-auto flex-none">
+        <img
+          src={cover}
+          alt={`Cover of ${title} by ${artistsString}`}
+          class="object-cover w-full h-full rounded-md"
+          transition:name=`playlist ${id} image`
+        />
+      </picture>
+
+      <div class="flex flex-auto flex-col px-2">
+        <h4 class="text-white text-sm" transition:name=`playlist ${id} title`>
+          {title}
+        </h4>
+
+        <span
+          class="text-xs text-gray-400"
+          transition:name=`playlist ${id} artists`
+        >
+          {artistsString}
+        </span>
+      </div>
+    </a>
+  </article>
+```
+
+- Crear un Estado Global con Zustand para almacenar el ID de la playlist que se encuentra en reproduccion y utilizarla en el componente de PlayButton para saber si la playlist esta en reproduccion o no:
+
+```ts
+import { create } from "zustand";
+
+export const usePlayerStore = create((set) => ({
+  isPlaying: false,
+  currentMusic: { playlist: null, song: null, songs: [] },
+  volume: 1,
+  setVolume: (volume) => set({ volume }),
+  setIsPlaying: (isPlaying) => set({ isPlaying }),
+  setCurrentMusic: (currentMusic) => set({ currentMusic }),
+}));
+```
+
+```tsx
+import { Pause, Play } from "./Player";
+import { usePlayerStore } from "@/store/playerStore";
+
+export function CardPlayButton({ id, size = "small" }) {
+  const { currentMusic, isPlaying, setIsPlaying, setCurrentMusic } =
+    usePlayerStore((state) => state);
+
+  const isPlayingPlaylist = isPlaying && currentMusic?.playlist.id === id;
+
+  const handleClick = () => {
+    if (isPlayingPlaylist) {
+      setIsPlaying(false);
+      return;
+    }
+
+    fetch(`/api/get-info-playlist.json?id=${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const { songs, playlist } = data;
+
+        setIsPlaying(true);
+        setCurrentMusic({ songs, playlist, song: songs[0] });
+      });
+  };
+
+  const iconClassName = size === "small" ? "w-4 h-4" : "w-5 h-5";
+
+  return (
+    <button
+      onClick={handleClick}
+      className="card-play-button rounded-full bg-green-500 p-4 hover:scale-105 transition hover:bg-green-400"
+    >
+      {isPlayingPlaylist ? (
+        <Pause className={iconClassName} />
+      ) : (
+        <Play className={iconClassName} />
+      )}
+    </button>
+  );
+}
+```
+
+- Creacion de un Endpoint en la carpeta `api/get-info-playlist.json.ts` para obtener las playlists:
+
+```ts
+import { allPlaylists, songs as allSongs } from "@/lib/data";
+
+export async function GET({ params, request }) {
+  // get the id from the url search params
+  const { url } = request;
+  const urlObject = new URL(url);
+  const id = urlObject.searchParams.get("id");
+
+  const playlist = allPlaylists.find((playlist) => playlist.id === id);
+  const songs = allSongs.filter((song) => song.albumId === playlist?.albumId);
+
+  return new Response(JSON.stringify({ playlist, songs }), {
+    headers: { "content-type": "application/json" },
+  });
+}
+```
