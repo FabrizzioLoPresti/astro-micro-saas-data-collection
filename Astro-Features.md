@@ -6,6 +6,8 @@
   - [Repositorio de SpaceX Launches](https://github.com/FabrizzioLoPresti/astro-curso-midudev)
 - [Clon de Spotify DESDE CERO con Astro 3, React JS, Svelte y TailwindCSS](https://www.youtube.com/watch?v=WRc8lz-bp78)
   - [Repositorio de Spotify Clone](https://github.com/midudev/spotify-twitch-clone)
+- [Chat para Hablar con PDF's usando Astro, Svelte, TailwindCSS y Cloudinary](https://www.youtube.com/watch?v=GEfPFLbCXPc)
+  - [Repositiorio de Chat con PDF's](https://github.com/midudev/chat-with-pdf)
 
 ## Aprende Astro 3 desde cero: Curso para principiantes + aplicacion con Astro [SpaceX Launches] -> Astro Features
 
@@ -842,4 +844,676 @@ export async function GET({ params, request }) {
     headers: { "content-type": "application/json" },
   });
 }
+```
+
+## Chat para Hablar con PDF's usando Astro, Svelte, TailwindCSS y Cloudinary -> Astro Features
+
+- Utilizacion como AI Service de Llama3 con Ollama en Servidor propio o Servicio de Cloudflare AI
+- Backgrounds de TailwindCSS por ibelik: [Backgrounds](https://bg.ibelick.com/)
+- Tener un Store para almacenar el estado global de la Aplicacion y en base a los valores almacenados en el Store, mostrar la seccion del formulario correspondiente
+
+```ts
+import { writable } from "svelte/store";
+
+export const APP_STATUS = {
+  INIT: 0,
+  LOADING: 1,
+  CHAT_MODE: 2,
+  ERROR: -1,
+};
+
+export const appStatus = writable(APP_STATUS.INIT);
+export const appStatusInfo = writable({
+  id: "c1a098ffcb49079c8180b18c7b15229a",
+  url: "https://res.cloudinary.com/midudev/image/upload/v1706810969/pdf/khiice5vqnr1gcn1pmtq.pdf",
+  pages: 4,
+});
+
+export const setAppStatusLoading = () => {
+  appStatus.set(APP_STATUS.LOADING);
+};
+
+export const setAppStatusError = () => {
+  appStatus.set(APP_STATUS.ERROR);
+};
+
+export const setAppStatusChatMode = ({
+  id,
+  url,
+  pages,
+}: {
+  id: string;
+  url: string;
+  pages: number;
+}) => {
+  appStatus.set(APP_STATUS.CHAT_MODE);
+  appStatusInfo.set({ id, url, pages });
+};
+```
+
+- Instalar libreria de Drag and Drop para subir un archivo posteriormente a la API de Cloudinary
+
+```ts
+  <script>
+    import {
+      setAppStatusLoading,
+      setAppStatusError,
+      setAppStatusChatMode,
+    } from "../store.ts"
+    import Dropzone from "svelte-file-dropzone"
+
+    let files = {
+      accepted: [],
+      rejected: [],
+    }
+
+    async function handleFilesSelect(e) {
+      const { acceptedFiles, fileRejections } = e.detail
+
+      files.accepted = [...files.accepted, ...acceptedFiles]
+      files.rejected = [...files.rejected, ...fileRejections]
+
+      if (acceptedFiles.length > 0) {
+        setAppStatusLoading()
+
+        const formData = new FormData()
+        formData.append("file", acceptedFiles[0])
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        })
+
+        if (!res.ok) {
+          setAppStatusError()
+          return
+        }
+
+        const { id, url, pages } = await res.json()
+        setAppStatusChatMode({ id, url, pages })
+      }
+    }
+  </script>
+
+  {#if files.accepted.length === 0}
+    <Dropzone
+      accept="application/pdf"
+      multiple={false}
+      on:drop={handleFilesSelect}>Arrastra y suelta aquí tu PDF</Dropzone
+    >
+  {/if}
+
+  <ol>
+    {#each files.accepted as item}
+      <li>{item.name}</li>
+    {/each}
+  </ol>
+```
+
+- Crear un Endpoint en la carpeta `api/upload.ts` para subir el archivo a Cloudinary desde el Componente de Upload mediante un FormData (colocar previamente Astro en modo `server`):
+
+```ts
+<script>
+  import {
+    setAppStatusLoading,
+    setAppStatusError,
+    setAppStatusChatMode,
+  } from "../store.ts"
+  import Dropzone from "svelte-file-dropzone"
+
+  let files = {
+    accepted: [],
+    rejected: [],
+  }
+
+  async function handleFilesSelect(e) {
+    const { acceptedFiles, fileRejections } = e.detail
+
+    files.accepted = [...files.accepted, ...acceptedFiles]
+    files.rejected = [...files.rejected, ...fileRejections]
+
+    if (acceptedFiles.length > 0) {
+      setAppStatusLoading()
+
+      const formData = new FormData()
+      formData.append("file", acceptedFiles[0])
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!res.ok) {
+        setAppStatusError()
+        return
+      }
+
+      const { id, url, pages } = await res.json()
+      setAppStatusChatMode({ id, url, pages })
+    }
+  }
+</script>
+
+{#if files.accepted.length === 0}
+  <Dropzone
+    accept="application/pdf"
+    multiple={false}
+    on:drop={handleFilesSelect}>Arrastra y suelta aquí tu PDF</Dropzone
+  >
+{/if}
+
+<ol>
+  {#each files.accepted as item}
+    <li>{item.name}</li>
+  {/each}
+</ol>
+```
+
+```ts
+import type { APIRoute } from "astro";
+import fs from "node:fs/promises";
+import path from "node:path";
+
+import { v2 as cloudinary, type UploadApiResponse } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: "midudev",
+  api_key: "898535479927365", // es pública
+  api_secret: import.meta.env.CLOUDINARY_SECRET,
+});
+
+const outputDir = path.join(process.cwd(), "public/text");
+
+const uploadStream = async (
+  buffer: Uint8Array,
+  options: {
+    folder: string;
+    ocr?: string;
+  }
+): Promise<UploadApiResponse> => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream(options, (error, result) => {
+        if (result) return resolve(result);
+        reject(error);
+      })
+      .end(buffer);
+  });
+};
+
+export const POST: APIRoute = async ({ request }) => {
+  const formData = await request.formData();
+  const file = formData.get("file") as File;
+
+  if (file == null) {
+    return new Response("No file found", { status: 400 });
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const unit8Array = new Uint8Array(arrayBuffer);
+
+  const result = await uploadStream(unit8Array, {
+    folder: "pdf",
+    ocr: "adv_ocr",
+  });
+
+  const { asset_id: id, secure_url: url, pages, info } = result;
+
+  const data = info?.ocr?.adv_ocr?.data;
+
+  const text = data
+    .map((blocks: { textAnnotations: { description: string }[] }) => {
+      const annotations = blocks["textAnnotations"] ?? {};
+      const first = annotations[0] ?? {};
+      const content = first["description"] ?? "";
+      return content.trim();
+    })
+    .filter(Boolean)
+    .join("\n");
+
+  // TODO: Meter esta info en una base de datos
+  // Mejor todavía en un vector y hacer los embeddings
+  // pero no nos da tiempo
+  fs.writeFile(`${outputDir}/${id}.txt`, text, "utf-8");
+
+  return new Response(
+    JSON.stringify({
+      id,
+      url,
+      pages,
+    })
+  );
+};
+```
+
+- Para poder subir el Archivo a Cloudinary y ser transformado en binario, asi extraer el texto luego, se debe utilizar el metodo `.upload_stream()`, agregar los cambios al Store y al Componente de Upload:
+
+```ts
+<script>
+  import {
+    setAppStatusLoading,
+    setAppStatusError,
+    setAppStatusChatMode,
+  } from "../store.ts"
+  import Dropzone from "svelte-file-dropzone"
+
+  let files = {
+    accepted: [],
+    rejected: [],
+  }
+
+  async function handleFilesSelect(e) {
+    const { acceptedFiles, fileRejections } = e.detail
+
+    files.accepted = [...files.accepted, ...acceptedFiles]
+    files.rejected = [...files.rejected, ...fileRejections]
+
+    if (acceptedFiles.length > 0) {
+      setAppStatusLoading()
+
+      const formData = new FormData()
+      formData.append("file", acceptedFiles[0])
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!res.ok) {
+        setAppStatusError()
+        return
+      }
+
+      const { id, url, pages } = await res.json()
+      setAppStatusChatMode({ id, url, pages })
+    }
+  }
+</script>
+
+{#if files.accepted.length === 0}
+  <Dropzone
+    accept="application/pdf"
+    multiple={false}
+    on:drop={handleFilesSelect}>Arrastra y suelta aquí tu PDF</Dropzone
+  >
+{/if}
+
+<ol>
+  {#each files.accepted as item}
+    <li>{item.name}</li>
+  {/each}
+</ol>
+```
+
+```ts
+import { writable } from "svelte/store";
+
+export const APP_STATUS = {
+  INIT: 0,
+  LOADING: 1,
+  CHAT_MODE: 2,
+  ERROR: -1,
+};
+
+export const appStatus = writable(APP_STATUS.INIT);
+export const appStatusInfo = writable({
+  id: "c1a098ffcb49079c8180b18c7b15229a",
+  url: "https://res.cloudinary.com/midudev/image/upload/v1706810969/pdf/khiice5vqnr1gcn1pmtq.pdf",
+  pages: 4,
+});
+
+export const setAppStatusLoading = () => {
+  appStatus.set(APP_STATUS.LOADING);
+};
+
+export const setAppStatusError = () => {
+  appStatus.set(APP_STATUS.ERROR);
+};
+
+export const setAppStatusChatMode = ({
+  id,
+  url,
+  pages,
+}: {
+  id: string;
+  url: string;
+  pages: number;
+}) => {
+  appStatus.set(APP_STATUS.CHAT_MODE);
+  appStatusInfo.set({ id, url, pages });
+};
+```
+
+- Crear el Componente de chat en el cual se van a escribir las preguntas que van a ser enviadas a la API de OpenAI, ademas de mostrar Imagenes de Previsualizacion de los PDF's por medio de la URL de Cloudinary (dar un Aspect Ratio a las imagenes para que no den un salto al cargar):
+
+```ts
+<script>
+  import { Input, Label, Spinner } from "flowbite-svelte"
+  import { appStatusInfo, setAppStatusError } from "../store"
+  const { url, pages, id } = $appStatusInfo
+
+  let answer = ""
+  let loading = false
+
+  const numOfImagesToShow = Math.min(pages, 4)
+  const images = Array.from({ length: numOfImagesToShow }, (_, i) => {
+    const page = i + 1
+    return url
+      .replace("/upload/", `/upload/w_400,h_540,c_fill,pg_${page}/`)
+      .replace(".pdf", ".jpg")
+  })
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    loading = true
+    answer = ""
+    const question = event.target.question.value
+
+    const searchParams = new URLSearchParams()
+    searchParams.append("id", id)
+    searchParams.append("question", question)
+
+    try {
+      const eventSource = new EventSource(`/api/ask?${searchParams.toString()}`)
+
+      eventSource.onmessage = (event) => {
+        loading = false
+        const incomingData = JSON.parse(event.data)
+
+        if (incomingData === "__END__") {
+          eventSource.close()
+          return
+        }
+
+        answer += incomingData
+      }
+    } catch (e) {
+      setAppStatusError()
+    } finally {
+      loading = false
+    }
+  }
+</script>
+
+<div class="grid grid-cols-4 gap-2">
+  {#each images as image}
+    <img
+      class="rounded w-full h-auto aspect-[400/540]"
+      src={image}
+      alt="PDF page"
+    />
+  {/each}
+</div>
+
+<form class="mt-8" on:submit={handleSubmit}>
+  <Label for="question" class="block mb-2">Deja aquí tu pregunta</Label>
+  <Input id="question" required placeholder="¿De qué trata este documento?"
+  ></Input>
+</form>
+
+{#if loading}
+  <div class="mt-10 flex justify-center items-center flex-col gap-y-2">
+    <Spinner />
+    <p class="opacity-75">Esperando respuesta...</p>
+  </div>
+{/if}
+
+{#if answer}
+  <div class="mt-8">
+    <p class="font-medium">Respuesta:</p>
+    <p>{answer}</p>
+  </div>
+{/if}
+```
+
+- Para poder obtener el texto del PDF desde Clodinary se debe activar el `ocr` en la subida del archivo a Cloudinary en el metodo de `upload_stream()`, ademas de agregar el texto del PDF en un archivo de texto en la carpeta `public/text` para poder ser leido por la API de OpenAI. Dentro del endpoint `/api/upload.ts` se retorna el contenido del PDF en un archivo de texto. Creamos un propio directorio donde poder acceder al archivo por medio de un ID, aunque lo ideal seria subir el archivo a un S3 o a una base de datos vectorizada para hacer embeddings de texto (**OpenAI Blog de como realizarlo u otros mecanismos con opciones mas baratas**) y poder hacer busquedas de texto en el futuro como **Cloudflare (Langchain and Cloudflare AI)**, Supabase o Google Cloud Storage:
+
+```ts
+import type { APIRoute } from "astro";
+import fs from "node:fs/promises";
+import path from "node:path";
+
+import { v2 as cloudinary, type UploadApiResponse } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: "midudev",
+  api_key: "898535479927365", // es pública
+  api_secret: import.meta.env.CLOUDINARY_SECRET,
+});
+
+const outputDir = path.join(process.cwd(), "public/text");
+
+const uploadStream = async (
+  buffer: Uint8Array,
+  options: {
+    folder: string;
+    ocr?: string;
+  }
+): Promise<UploadApiResponse> => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream(options, (error, result) => {
+        if (result) return resolve(result);
+        reject(error);
+      })
+      .end(buffer);
+  });
+};
+
+export const POST: APIRoute = async ({ request }) => {
+  const formData = await request.formData();
+  const file = formData.get("file") as File;
+
+  if (file == null) {
+    return new Response("No file found", { status: 400 });
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const unit8Array = new Uint8Array(arrayBuffer);
+
+  const result = await uploadStream(unit8Array, {
+    folder: "pdf",
+    ocr: "adv_ocr",
+  });
+
+  const { asset_id: id, secure_url: url, pages, info } = result;
+
+  const data = info?.ocr?.adv_ocr?.data;
+
+  const text = data
+    .map((blocks: { textAnnotations: { description: string }[] }) => {
+      const annotations = blocks["textAnnotations"] ?? {};
+      const first = annotations[0] ?? {};
+      const content = first["description"] ?? "";
+      return content.trim();
+    })
+    .filter(Boolean)
+    .join("\n");
+
+  // TODO: Meter esta info en una base de datos
+  // Mejor todavía en un vector y hacer los embeddings
+  // pero no nos da tiempo
+  fs.writeFile(`${outputDir}/${id}.txt`, text, "utf-8");
+
+  return new Response(
+    JSON.stringify({
+      id,
+      url,
+      pages,
+    })
+  );
+};
+```
+
+- Crear el endpoint `/api/ask?${searchParams.toString()}` al cual se envia la pregunta y va a responder con la respuesta de la API de OpenAI (haciendo uso del Stream de Datos en el Componente de Chat), ademas de enviar la pregunta a la API de OpenAI y recibir la respuesta:
+
+```ts
+import { type APIRoute } from "astro";
+import { readFile } from "node:fs/promises";
+import { responseSSE } from "../../utils/sse";
+
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: import.meta.env.OPENAI_KEY,
+});
+
+export const GET: APIRoute = async ({ request }) => {
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id");
+  const question = url.searchParams.get("question");
+
+  if (!id) {
+    return new Response("Missing id", { status: 400 });
+  }
+
+  if (!question) {
+    return new Response("Missing question", { status: 400 });
+  }
+
+  const txt = await readFile(`public/text/${id}.txt`, "utf-8");
+
+  return responseSSE({ request }, async (sendEvent) => {
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-16k",
+      stream: true,
+      messages: [
+        {
+          role: "system",
+          content:
+            'Eres un investigador español experimentado, experto en interpretar y responder preguntas basadas en las fuentes proporcionadas. Utilizando el contexto proporcionado entre las etiquetas <context></context>, genera una respuesta concisa para una pregunta rodeada con las etiquetas <question></question>. Debes usar únicamente información del contexto. Usa un tono imparcial y periodístico. No repitas texto. Si no hay nada en el contexto relevante para la pregunta en cuestión, simplemente di "No lo sé". No intentes inventar una respuesta. Cualquier cosa entre los siguientes bloques html context se recupera de un banco de conocimientos, no es parte de la conversación con el usuario.',
+        },
+        {
+          role: "user",
+          content: `<context>${txt}</context><question>${question}</question>`,
+        },
+      ],
+    });
+
+    for await (const part of response) {
+      sendEvent(part.choices[0].delta.content);
+    }
+
+    sendEvent("__END__");
+  });
+};
+```
+
+```ts
+export const responseSSE = (
+  { request }: { request: Request },
+  callback: (sendEvent: (data: any) => void) => Promise<void>
+) => {
+  const body = new ReadableStream({
+    async start(controller) {
+      // Text encoder for converting strings to Uint8Array
+      const encoder = new TextEncoder();
+
+      // Send event to client
+      const sendEvent = (data: any) => {
+        const message = `data: ${JSON.stringify(data)}\n\n`;
+        controller.enqueue(encoder.encode(message));
+      };
+
+      callback(sendEvent);
+
+      // Handle the connection closing
+      request.signal.addEventListener("abort", () => {
+        controller.close();
+      });
+    },
+  });
+
+  return new Response(body, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    },
+  });
+};
+```
+
+- En el Componente de Chat hacemos el llamado hacia nuestro Endpoint el cual va a responder con la respuesta de la API de OpenAI, ademas de mostrar las imagenes de las paginas del PDF y el formulario para enviar la pregunta:
+
+```ts
+<script>
+  import { Input, Label, Spinner } from "flowbite-svelte"
+  import { appStatusInfo, setAppStatusError } from "../store"
+  const { url, pages, id } = $appStatusInfo
+
+  let answer = ""
+  let loading = false
+
+  const numOfImagesToShow = Math.min(pages, 4)
+  const images = Array.from({ length: numOfImagesToShow }, (_, i) => {
+    const page = i + 1
+    return url
+      .replace("/upload/", `/upload/w_400,h_540,c_fill,pg_${page}/`)
+      .replace(".pdf", ".jpg")
+  })
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    loading = true
+    answer = ""
+    const question = event.target.question.value
+
+    const searchParams = new URLSearchParams()
+    searchParams.append("id", id)
+    searchParams.append("question", question)
+
+    try {
+      const eventSource = new EventSource(`/api/ask?${searchParams.toString()}`)
+
+      eventSource.onmessage = (event) => {
+        loading = false
+        const incomingData = JSON.parse(event.data)
+
+        if (incomingData === "__END__") {
+          eventSource.close()
+          return
+        }
+
+        answer += incomingData
+      }
+    } catch (e) {
+      setAppStatusError()
+    } finally {
+      loading = false
+    }
+  }
+</script>
+
+<div class="grid grid-cols-4 gap-2">
+  {#each images as image}
+    <img
+      class="rounded w-full h-auto aspect-[400/540]"
+      src={image}
+      alt="PDF page"
+    />
+  {/each}
+</div>
+
+<form class="mt-8" on:submit={handleSubmit}>
+  <Label for="question" class="block mb-2">Deja aquí tu pregunta</Label>
+  <Input id="question" required placeholder="¿De qué trata este documento?"
+  ></Input>
+</form>
+
+{#if loading}
+  <div class="mt-10 flex justify-center items-center flex-col gap-y-2">
+    <Spinner />
+    <p class="opacity-75">Esperando respuesta...</p>
+  </div>
+{/if}
+
+{#if answer}
+  <div class="mt-8">
+    <p class="font-medium">Respuesta:</p>
+    <p>{answer}</p>
+  </div>
+{/if}
 ```
