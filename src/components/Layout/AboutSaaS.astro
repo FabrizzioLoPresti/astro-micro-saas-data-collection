@@ -1,3 +1,7 @@
+---
+import { Image } from "astro:assets";
+---
+
 <section
   class="w-4/5 md:w-2/5 lg:w-3/5 mx-auto grid lg:grid-cols-3 gap-y-8 lg:gap-y-16 gap-x-12 py-12 items-center"
 >
@@ -17,7 +21,7 @@
   </div>
 
   <div class="hidden lg:block lg:col-start-3 lg:col-end-4">
-    <img
+    <Image
       src="/img/saas.png"
       width={300}
       height={300}
@@ -54,7 +58,7 @@
   </div>
 
   <div class="hidden lg:block lg:col-start-3 lg:col-end-4">
-    <img
+    <Image
       src="/img/micro-saas.png"
       width={300}
       height={300}

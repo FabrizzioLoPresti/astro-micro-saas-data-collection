@@ -11,13 +11,11 @@ export const prerender = true;
 ---
 
 <Layout title="¿Cuál es tu próximo proyecto?">
-  <main>
-    <Hero />
-    <ParallaxText client:visible />
-    <Project client:visible />
-    <AboutSaaS />
-    <Footer />
-  </main>
+  <Hero />
+  <ParallaxText client:visible />
+  <Project client:load />
+  <AboutSaaS />
+  <Footer />
 </Layout>
 
 <style></style>
