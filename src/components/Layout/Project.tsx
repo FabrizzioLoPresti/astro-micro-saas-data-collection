@@ -79,7 +79,7 @@ const Project = (props: Props) => {
       </div>
 
       <div
-        className="p-8 border border-zinc-300 rounded-lg lg:col-start-3 lg:col-end-5 h-full space-y-4  shadow-xl"
+        className="p-8 border border-zinc-300 rounded-lg lg:col-start-3 lg:col-end-5 h-full space-y-4 shadow-xl"
         ref={ref}
       >
         <Badge variant="outline">Soluciones AI</Badge>
