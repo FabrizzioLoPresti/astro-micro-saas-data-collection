@@ -73,7 +73,7 @@ const Project = (props: Props) => {
             <span className="text-blue-800 font-bold">
               Asesoramiento a Tu Alcance:
             </span>{" "}
-            Recibe consejos personalizados para hacer realidad tu idea
+            Recibe consejos personalizados para hacer realidad tu idea.
           </li>
         </ol>
       </div>
@@ -86,20 +86,20 @@ const Project = (props: Props) => {
         <h2 className="text-2xl font-semibold">¿Cómo Funciona?</h2>
         <ol className="[&>li]:font-light [&>li]:border [&>li]:border-zinc-300 [&>li]:rounded-md [&>li]:p-4 [&>li]:shadow-md space-y-4">
           <li>
-            <span className="text-blue-800 font-bold">Paso 1:</span> Completa
+            <span className="text-blue-800 font-bold">Paso 1:</span> Completas
             nuestro formulario
           </li>
           <li>
-            <span className="text-blue-800 font-bold">Paso 2:</span> Análisis de
-            Datos
+            <span className="text-blue-800 font-bold">Paso 2:</span> La IA
+            analiza tus respuestas y genera un informe
           </li>
           <li>
-            <span className="text-blue-800 font-bold">Paso 3:</span> Generación
-            de Ideas y Reportes
+            <span className="text-blue-800 font-bold">Paso 3:</span> Recibes un
+            mail con posibles ideas para desarrollar
           </li>
           <li>
-            <span className="text-blue-800 font-bold">Paso 4:</span> Acción y
-            Resultados
+            <span className="text-blue-800 font-bold">Paso 4:</span>{" "}
+            Almacenamiento y analisis de los datos obtenidos
           </li>
         </ol>
       </div>
