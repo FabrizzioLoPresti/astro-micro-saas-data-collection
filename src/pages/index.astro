@@ -1,11 +1,15 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Hero from "@/components/Layout/Hero.astro";
+import ParallaxText from "@/components/Layout/ParallaxText";
+
+export const prerender = true;
 ---
 
 <Layout title="¿Cuál es tu próximo proyecto?">
   <main>
     <Hero />
+    <ParallaxText client:visible />
   </main>
 </Layout>
 
