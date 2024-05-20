@@ -8,6 +8,8 @@
   - [Repositorio de Spotify Clone](https://github.com/midudev/spotify-twitch-clone)
 - [Chat para Hablar con PDF's usando Astro, Svelte, TailwindCSS y Cloudinary](https://www.youtube.com/watch?v=GEfPFLbCXPc)
   - [Repositiorio de Chat con PDF's](https://github.com/midudev/chat-with-pdf)
+- [Desarrollo y Deploy de la Pre-landing web de LA VELADA del año IV](https://www.youtube.com/watch?v=BVnhDlbhPvs&list=PLUofhDIg_38rXS6QJDOQky5sYU-hQKwRv)
+  - [Repositiorio de Web de La Velada](https://github.com/midudev/la-velada-web-oficial)
 
 ## Aprende Astro 3 desde cero: Curso para principiantes + aplicacion con Astro [SpaceX Launches] -> Astro Features
 
