@@ -4,6 +4,7 @@ import Layout from "@/layouts/Layout.astro";
 import Hero from "@/components/Layout/Hero.astro";
 import ParallaxText from "@/components/Layout/ParallaxText";
 import Project from "@/components/Layout/Project";
+import AboutSaaS from "@/components/Layout/AboutSaaS.astro";
 
 export const prerender = true;
 ---
@@ -13,6 +14,7 @@ export const prerender = true;
     <Hero />
     <ParallaxText client:visible />
     <Project client:visible />
+    <AboutSaaS />
   </main>
 </Layout>
 
