@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { type QuestionType } from "@/types/types";
+import { type QuestionType } from "@/types/types.d";
 import { questions as questionData } from "@/lib/data";
 import { persist } from "zustand/middleware";
 import { getAllQuestions } from "@/services/questions";

@@ -3,10 +3,9 @@ import Layout from "@/layouts/Layout.astro";
 import FormComponent from "@/components/Form/Form";
 ---
 
-<Layout title="Home">
-  <section
-    class="min-h-[100dvh] h-full flex flex-col items-center justify-center gap-y-2"
-  >
-    <FormComponent client:load />
-  </section>
-</Layout>
+<Layout title="Formulario" />
+<section
+  class="min-h-[100dvh] h-full flex flex-col items-center justify-center gap-y-2"
+>
+  <FormComponent client:load />
+</section>

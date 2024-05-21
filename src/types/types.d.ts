@@ -1,5 +1,5 @@
 export type QuestionType = {
-  id: int;
+  id: number;
   question: string;
   options: string[];
   answerSelected?: number
