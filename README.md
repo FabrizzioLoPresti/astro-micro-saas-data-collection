@@ -12,6 +12,25 @@ npm create astro@latest -- --template basics
 
 ![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
 
+## About Project
+
+This project consists of collecting data based on questions with predefined answers in order to generate a dataset with the answers obtained and user mails, focusing on the creation of new SaaS based on customer needs. Once the user's answers are received, using AI, possible ideas that could be implemented by the user to carry out his idea are generated and sent to the user's email from the server. In addition to storing the responses in a database in order to generate a dataset for further analysis of the data and generate new Micro-SaaS oriented to meet the most recurring needs.
+
+Translated with DeepL.com (free version)
+
+### Techs used
+
+- Astro
+- React.js 18, TypeScript
+- TailwindCSS
+- Shadcn
+- Framer Motion, Motion One
+- React Hook Form, Zod
+- Zustand
+- Cloudflare Adapter
+- Posthog Analytics
+- Namecheap Domain
+
 ## 🚀 Project Structure
 
 Inside of your Astro project, you'll see the following folders and files:
@@ -22,11 +41,21 @@ Inside of your Astro project, you'll see the following folders and files:
 │   └── favicon.svg
 ├── src/
 │   ├── components/
-│   │   └── Card.astro
+│   │   └── Form/
+│   │       ├── Form.tsx
+│   │       ├── Question.tsx
+│   │       ├── SendForm.tsx
+│   │   └── Layout/
+│   │       ├── Footer.astro
 │   ├── layouts/
 │   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
+│   ├── lib/
+│   ├── pages/
+│   │   └── index.astro
+│   ├── services/
+│   ├── store/
+│   ├── styles/
+│   └── types/
 └── package.json
 ```
 

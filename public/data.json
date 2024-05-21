@@ -2,7 +2,7 @@
   "questions": [
     {
       "id": 1,
-      "question": "¿Cuál es tu siguiente Proyecto?",
+      "question": "¿Cuál es la plataforma que más utilizas?",
       "options": ["Aplicación Web", "Aplicación Móvil", "Aplicación de Escritorio", "Otro"]
     },
     {

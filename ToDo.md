@@ -1,0 +1,11 @@
+- [] Verificar etiquetas para el SEO
+- [] Subir imagenes optimizadas a Cloudflare y utilizar CDN para evitar ataques de DDOS
+- [] Revisar el archivo robots.txt
+- [] Revisar el archivo sitemap.xml
+- [] Subir Preguntas con sus Respuestas a BD y consultar de ahi mediante API REST o dejar el JSON estatico en el servidor
+  - [] Crear un archivo JSON con las preguntas
+  - [] Crear tabla en BD con las preguntas
+  - [] Subir a Cloudflare DB o AstroDB
+- [] Agregar Posthog para analiticas
+- [] Comprar dominio en Namecheap
+- [] Desplegar web en Cloudflare Pages
