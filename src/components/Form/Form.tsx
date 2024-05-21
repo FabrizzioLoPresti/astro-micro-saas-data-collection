@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronRightIcon, ChevronLeftIcon } from "@radix-ui/react-icons";
 import { useQuestionsStore } from "@/store/questionsStore";
 import Question from "./Question";
+import SendForm from "./SendForm";
 import { type QuestionType } from "@/types/types.d";
 
 type Props = {};
@@ -62,8 +63,7 @@ const FormComponent = (props: Props) => {
         </div>
 
         {currentQuestion === questions.length ? (
-          // <SendForm />
-          <div>SendForm</div>
+          <SendForm />
         ) : (
           // <Suspense fallback={<Spinner />}>
           <Question questionInfo={questionInfo} />

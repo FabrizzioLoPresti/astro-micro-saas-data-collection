@@ -30,7 +30,7 @@ const Question = ({ questionInfo }: Props) => {
 
       <div>
         <RadioGroup>
-          <ul className="[&>li]:border-t-2 [&>li:nth-child(odd)]:border-t-blue-800 [&>li:nth-child(even)]:border-t-blue-200">
+          <ul className="[&>li]:border-t-2 [&>li]:border-t-blue-200">
             {questionInfo.options.map((option, index) => (
               <li
                 className="py-3 px-6 flex items-center gap-x-2"
