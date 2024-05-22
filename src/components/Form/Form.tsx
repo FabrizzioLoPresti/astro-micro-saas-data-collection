@@ -1,9 +1,10 @@
 import { Suspense, useEffect } from "react";
+import Spinner from "../Layout/Spinner";
+import Question from "./Question";
+import SendForm from "./SendForm";
 import { Button } from "@/components/ui/button";
 import { ChevronRightIcon, ChevronLeftIcon } from "@radix-ui/react-icons";
 import { useQuestionsStore } from "@/store/questionsStore";
-import Question from "./Question";
-import SendForm from "./SendForm";
 import { type QuestionType } from "@/types/types.d";
 
 type Props = {};
@@ -20,7 +21,7 @@ const FormComponent = (props: Props) => {
     fetchQuestions();
   }, []);
 
-  // if (questions.length === 0) return <Spinner />;
+  if (questions.length === 0) return <Spinner />;
 
   const questionInfo = questions[currentQuestion];
 

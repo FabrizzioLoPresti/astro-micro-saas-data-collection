@@ -2,53 +2,58 @@
   "questions": [
     {
       "id": 1,
-      "question": "¿Cuál es la plataforma que más utilizas?",
-      "options": ["Aplicación Web", "Aplicación Móvil", "Aplicación de Escritorio", "Otro"]
+      "question": "¿En qué área te gustaría desarrollar un proyecto SaaS?",
+      "options": ["Productividad y organización", "Salud y bienestar", "Educación y aprendizaje", "Gestión financiera", "Comunicación y redes sociales", "Entretenimiento", "Otro"]
     },
     {
       "id": 2,
-      "question": "¿Cuál es tu nivel de experiencia en desarrollo de software?",
-      "options": ["Principiante", "Intermedio", "Avanzado", "Experto"]
+      "question": "¿Qué problema específico te gustaría resolver con tu proyecto SaaS?",
+      "options": ["Falta de tiempo", "Desorganización", "Problemas de comunicación", "Manejo de dinero", "Motivación para el ejercicio", "Dificultad para aprender", "Acceso a entretenimiento", "Otro"]
     },
     {
       "id": 3,
-      "question": "¿Qué tipo de plataforma prefieres para alojar tu proyecto?",
-      "options": ["Nube Pública", "Servidores Propios", "Nube Privada", "Ninguna preferencia"]
+      "question": "¿Qué plataforma prefieres para desarrollar tu SaaS?",
+      "options": ["Aplicación Web", "Aplicación Móvil", "Aplicación de Escritorio", "No tengo preferencia"]
     },
     {
       "id": 4,
-      "question": "¿Qué tan importante es la escalabilidad para tu proyecto?",
-      "options": ["Crucial", "Importante", "No es prioritario", "No lo sé"]
+      "question": "¿Qué tipo de modelo de negocio prefieres para tu SaaS?",
+      "options": ["Suscripción mensual", "Suscripción anual", "Pago único", "Freemium con opciones premium", "Publicidad"]
     },
     {
       "id": 5,
-      "question": "¿Qué lenguaje de programación prefieres utilizar?",
-      "options": ["JavaScript", "Python", "Java", "Otro"]
+      "question": "¿Qué funcionalidad crees que es esencial para tu SaaS?",
+      "options": ["Automatización de tareas", "Recordatorios y alertas", "Análisis y reportes", "Integración con otras aplicaciones", "Personalización", "Facilidad de uso", "Interacción social"]
     },
     {
       "id": 6,
-      "question": "¿Qué modelo de monetización prefieres para tu proyecto?",
-      "options": ["Suscripción", "Publicidad", "Venta de licencias", "Freemium"]
+      "question": "¿Qué presupuesto mensual estarías dispuesto a invertir en el desarrollo de tu SaaS?",
+      "options": ["Menos de $50", "$50 - $200", "$200 - $500", "Más de $500"]
     },
     {
       "id": 7,
-      "question": "¿Cuál es tu presupuesto para el desarrollo inicial del proyecto?",
-      "options": ["Menos de $1000", "$1000 - $5000", "$5000 - $10000", "Más de $10000"]
+      "question": "¿Qué nivel de asistencia técnica consideras necesario para usar y desarrollar tu SaaS?",
+      "options": ["Ninguno, puedo manejarlo solo", "Soporte básico", "Soporte intermedio", "Soporte avanzado con asistencia personalizada"]
     },
     {
       "id": 8,
-      "question": "¿Qué nivel de seguridad necesitas para tu proyecto?",
-      "options": ["Básico", "Medio", "Alto", "Muy alto"]
+      "question": "¿Qué tan importante es la capacidad de escalar tu SaaS y manejar un volumen creciente de usuarios?",
+      "options": ["Muy importante", "Importante", "No es prioritario", "No lo sé"]
     },
     {
       "id": 9,
-      "question": "¿Qué integraciones externas necesitará tu proyecto?",
-      "options": ["APIs de redes sociales", "Pasarelas de pago", "Servicios de almacenamiento en la nube", "Otras"]
+      "question": "¿Qué nivel de conocimiento tienes sobre el desarrollo de software y herramientas digitales?",
+      "options": ["Principiante", "Intermedio", "Avanzado", "Experto"]
     },
     {
       "id": 10,
-      "question": "¿Qué tan importante es la usabilidad de la interfaz de usuario para tu proyecto?",
-      "options": ["Muy importante", "Importante", "No es prioritario", "No lo sé"]
+      "question": "¿Qué tipo de mercado te gustaría alcanzar con tu SaaS?",
+      "options": ["Mercado local", "Mercado regional", "Mercado nacional", "Mercado internacional", "No estoy seguro"]
+    },
+    {
+      "id": 11,
+      "question": "¿Qué te motiva a desarrollar un nuevo proyecto SaaS?",
+      "options": ["Emprender un nuevo negocio", "Resolver un problema personal", "Ayudar a otros", "Generar ingresos adicionales", "Otro"]
     }
   ]
 }
