@@ -3,4 +3,5 @@ export type QuestionType = {
   question: string;
   options: string[];
   answerSelected?: number
+  otherAnswer?: string;
 }

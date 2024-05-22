@@ -30,20 +30,37 @@ const Question = ({ questionInfo }: Props) => {
 
       <div>
         <RadioGroup>
-          <ul className="[&>li]:border-t-2 [&>li]:border-t-blue-200">
+          <ul className="[&>div>li]:border-t-2 [&>div>li]:border-t-blue-200">
             {questionInfo.options.map((option, index) => (
-              <li
-                className="py-3 px-6 flex items-center gap-x-2"
-                key={index}
-                onClick={handleSelectAnswer(index, questionInfo, selectAnswer)}
-              >
-                <RadioGroupItem
-                  value={index.toString()}
-                  id={index.toString()}
-                  checked={questionInfo.answerSelected === index}
-                />
-                <Label htmlFor={index.toString()}>{option}</Label>
-              </li>
+              <div key={index}>
+                <li
+                  className="py-3  flex items-center gap-x-2"
+                  onClick={handleSelectAnswer(
+                    index,
+                    questionInfo,
+                    selectAnswer
+                  )}
+                >
+                  <RadioGroupItem
+                    value={index.toString()}
+                    id={index.toString()}
+                    checked={questionInfo.answerSelected === index}
+                  />
+                  <Label
+                    htmlFor={index.toString()}
+                    className="text-sm lg:text-base"
+                  >
+                    {option}
+                  </Label>
+                </li>
+                {option === "Otro" && questionInfo.answerSelected === index && (
+                  <input
+                    type="text"
+                    className="border border-gray-300 rounded-md px-2 py-1 w-full"
+                    placeholder="Especificar"
+                  />
+                )}
+              </div>
             ))}
           </ul>
         </RadioGroup>
