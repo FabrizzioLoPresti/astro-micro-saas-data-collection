@@ -58,6 +58,10 @@ const Question = ({ questionInfo }: Props) => {
                     type="text"
                     className="border border-gray-300 rounded-md px-2 py-1 w-full"
                     placeholder="Especificar"
+                    value={questionInfo.otherAnswer}
+                    onChange={(e) => {
+                      selectAnswer(questionInfo.id, index, e.target.value);
+                    }}
                   />
                 )}
               </div>

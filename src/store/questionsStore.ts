@@ -11,7 +11,7 @@ type Store = {
   setQuestions: (questions: QuestionType[]) => void;
   nextQuestion: () => void;
   prevQuestion: () => void;
-  selectAnswer: (questionId: number, indexAnswer: number) => void;
+  selectAnswer: (questionId: number, indexAnswer: number, otherAnswer?: string) => void;
 }
 
 export const useQuestionsStore = create<Store>()(persist((set, get) => ({
@@ -45,7 +45,7 @@ export const useQuestionsStore = create<Store>()(persist((set, get) => ({
       })
     }
   },
-  selectAnswer: (questionId, indexAnswer) => {
+  selectAnswer: (questionId, indexAnswer, otherAnswer) => {
     // Logica para seleccionar una respuesta -> StructuredClone para clonar objetos de forma profunda
 
     // Usar el StructuredClone para clonar el array de preguntas
@@ -57,11 +57,22 @@ export const useQuestionsStore = create<Store>()(persist((set, get) => ({
     // Obtenemos la informacion del pregunta que queremos modificar
     const questionInfo = newQuestions[questionIndex];
 
-    // Cambiar informacion en la copia de la pregunta
-    newQuestions[questionIndex] = {
-      ...questionInfo,
-      answerSelected: indexAnswer
-    };
+    // Verificar si la respuesta seleccionada es "Otro"
+    if (questionInfo.options[indexAnswer] === "Otro") {
+      // Cambiar informacion en la copia de la pregunta
+      newQuestions[questionIndex] = {
+        ...questionInfo,
+        answerSelected: indexAnswer,
+        otherAnswer
+      };
+    } else {
+      // Cambiar informacion en la copia de la pregunta
+      newQuestions[questionIndex] = {
+        ...questionInfo,
+        answerSelected: indexAnswer,
+        otherAnswer: ""
+      };
+    }
 
     // Actualizar el estado con las preguntas modificadas -> 1:02:04
     set({ questions: newQuestions });
