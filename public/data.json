@@ -2,42 +2,42 @@
   "questions": [
     {
       "id": 1,
-      "question": "¿En qué área te gustaría desarrollar un proyecto SaaS?",
-      "options": ["Productividad y organización", "Salud y bienestar", "Educación y aprendizaje", "Gestión financiera", "Comunicación y redes sociales", "Entretenimiento", "Otro"]
+      "question": "¿En qué área te gustaría desarrollar el proyecto?",
+      "options": ["Productividad y organización", "Salud y bienestar", "Educación y aprendizaje", "Gestión financiera", "Otro"]
     },
     {
       "id": 2,
-      "question": "¿Qué problema específico te gustaría resolver con tu proyecto SaaS?",
-      "options": ["Falta de tiempo", "Desorganización", "Problemas de comunicación", "Manejo de dinero", "Motivación para el ejercicio", "Dificultad para aprender", "Acceso a entretenimiento", "Otro"]
+      "question": "¿Qué problema específico te gustaría resolver?",
+      "options": ["Falta de tiempo", "Desorganización", "Problemas de comunicación", "Manejo de dinero", "Otro"]
     },
     {
       "id": 3,
-      "question": "¿Qué plataforma prefieres para desarrollar tu SaaS?",
+      "question": "¿Qué plataforma prefieres?",
       "options": ["Aplicación Web", "Aplicación Móvil", "Aplicación de Escritorio", "No tengo preferencia"]
     },
     {
       "id": 4,
-      "question": "¿Qué tipo de modelo de negocio prefieres para tu SaaS?",
-      "options": ["Suscripción mensual", "Suscripción anual", "Pago único", "Freemium con opciones premium", "Publicidad"]
+      "question": "¿Qué tipo de modelo de negocio prefieres?",
+      "options": ["Suscripción mensual", "Pago único", "Freemium con opciones premium", "Publicidad"]
     },
     {
       "id": 5,
-      "question": "¿Qué funcionalidad crees que es esencial para tu SaaS?",
-      "options": ["Automatización de tareas", "Recordatorios y alertas", "Análisis y reportes", "Integración con otras aplicaciones", "Personalización", "Facilidad de uso", "Interacción social"]
+      "question": "¿Qué funcionalidad crees que es esencial?",
+      "options": ["Automatización de tareas", "Recordatorios y alertas", "Análisis y reportes", "Integración con otras aplicaciones", "Otro"]
     },
     {
       "id": 6,
-      "question": "¿Qué presupuesto mensual estarías dispuesto a invertir en el desarrollo de tu SaaS?",
+      "question": "¿Qué presupuesto mensual estarías dispuesto a invertir?",
       "options": ["Menos de $50", "$50 - $200", "$200 - $500", "Más de $500"]
     },
     {
       "id": 7,
-      "question": "¿Qué nivel de asistencia técnica consideras necesario para usar y desarrollar tu SaaS?",
-      "options": ["Ninguno, puedo manejarlo solo", "Soporte básico", "Soporte intermedio", "Soporte avanzado con asistencia personalizada"]
+      "question": "¿Qué nivel de asistencia técnica consideras necesario?",
+      "options": ["Ninguno, puedo manejarlo solo", "Soporte básico", "Soporte intermedio", "Soporte avanzado"]
     },
     {
       "id": 8,
-      "question": "¿Qué tan importante es la capacidad de escalar tu SaaS y manejar un volumen creciente de usuarios?",
+      "question": "¿Qué tan importante es la capacidad de escalar y manejar un volumen creciente de usuarios?",
       "options": ["Muy importante", "Importante", "No es prioritario", "No lo sé"]
     },
     {
@@ -47,12 +47,12 @@
     },
     {
       "id": 10,
-      "question": "¿Qué tipo de mercado te gustaría alcanzar con tu SaaS?",
+      "question": "¿Qué tipo de mercado te gustaría alcanzar?",
       "options": ["Mercado local", "Mercado regional", "Mercado nacional", "Mercado internacional", "No estoy seguro"]
     },
     {
       "id": 11,
-      "question": "¿Qué te motiva a desarrollar un nuevo proyecto SaaS?",
+      "question": "¿Qué te motiva a desarrollar un nuevo proyecto?",
       "options": ["Emprender un nuevo negocio", "Resolver un problema personal", "Ayudar a otros", "Generar ingresos adicionales", "Otro"]
     }
   ]
