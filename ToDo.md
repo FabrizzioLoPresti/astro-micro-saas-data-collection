@@ -1,5 +1,5 @@
 - [] Verificar etiquetas para el SEO
-- [] Subir imagenes optimizadas a Cloudflare y utilizar CDN para evitar ataques de DDOS
+- [] Subir imagenes optimizadas a Cloudflare y utilizar CDN para evitar ataques de DDOS (cachear imagenes)
 - [] Revisar el archivo robots.txt
 - [] Revisar el archivo sitemap.xml
 - [] Subir Preguntas con sus Respuestas a BD y consultar de ahi mediante API REST o dejar el JSON estatico en el servidor
