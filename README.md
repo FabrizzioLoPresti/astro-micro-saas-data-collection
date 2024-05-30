@@ -27,9 +27,13 @@ Translated with DeepL.com (free version)
 - Framer Motion, Motion One
 - React Hook Form, Zod
 - Zustand
-- Cloudflare Adapter
+- Vercel AI SDK | OpenAI GPT API
+- MercadoPago API
+- AstroDB | Supabase
 - Posthog Analytics
-- Namecheap Domain
+- Cloudflare Pages
+- Cloudflare CDN | Cloudinary
+- Cloudflare | Namecheap Domain
 
 ## 🚀 Project Structure
 
