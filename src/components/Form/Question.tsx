@@ -54,15 +54,33 @@ const Question = ({ questionInfo }: Props) => {
                   </Label>
                 </li>
                 {option === "Otro" && questionInfo.answerSelected === index && (
-                  <input
-                    type="text"
-                    className="border border-gray-300 rounded-md px-2 py-1 w-full"
-                    placeholder="Especificar"
-                    value={questionInfo.otherAnswer}
-                    onChange={(e) => {
-                      selectAnswer(questionInfo.id, index, e.target.value);
-                    }}
-                  />
+                  <>
+                    <input
+                      type="text"
+                      className="border border-gray-300 rounded-md px-2 py-1 w-full"
+                      placeholder="Especificar"
+                      value={questionInfo.otherAnswer}
+                      onChange={(e) => {
+                        // Verificar longitud de la respuesta como maxim 100 caracteres
+                        if (e.target.value.length > 100) return;
+
+                        selectAnswer(questionInfo.id, index, e.target.value);
+                      }}
+                    />
+                    <div className="flex flex-col">
+                      {/* Mostrar mensaje de campo requerido una vez seleccionada la opcion "Otro", si no se ha ingresado texto o si se ingreso un texto vacio (solo espacios) */}
+                      {(!questionInfo.otherAnswer ||
+                        questionInfo.otherAnswer?.length === 0 ||
+                        questionInfo.otherAnswer === "") && (
+                        <span className="text-red-500 text-sm">
+                          Este campo es requerido
+                        </span>
+                      )}
+                      <span className="text-sm text-gray-500">
+                        Máximo 100 caracteres
+                      </span>
+                    </div>
+                  </>
                 )}
               </div>
             ))}
