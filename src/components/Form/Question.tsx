@@ -50,7 +50,7 @@ const Question = ({ questionInfo }: Props) => {
             id={index.toString()}
             checked={questionInfo.answerSelected === index}
           />
-          <Label htmlFor={index.toString()} className="text-sm lg:text-base">
+          <Label htmlFor={index.toString()} className="text-sm md:text-base">
             {option}
           </Label>
         </li>
@@ -81,7 +81,7 @@ const Question = ({ questionInfo }: Props) => {
 
   return (
     <div className="space-y-8">
-      <h4 className="text-blue-800 font-bold text-2xl text-center">
+      <h4 className="text-blue-800 font-bold text-xl md:text-2xl text-center">
         {questionInfo.question}
       </h4>
       <div>

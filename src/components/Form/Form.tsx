@@ -26,7 +26,7 @@ const FormComponent = (props: Props) => {
   const questionInfo = questions[currentQuestion];
 
   return (
-    <div className="max-w-[600px] max-h-[600px] p-8 border border-zinc-300 bg-neutral-50 shadow-2xl">
+    <div className="w-full h-[560px] md:w-[600px] md:h-[600px] p-8 border border-zinc-300 bg-neutral-50 shadow-2xl">
       {currentQuestion < questions.length && (
         <div className="flex flex-col items-center">
           <h3 className="text-xl font-bold text-blue-800 before:content-['-___'] after:content-['___-']">
@@ -41,7 +41,7 @@ const FormComponent = (props: Props) => {
       )}
 
       <div className="h-full">
-        <div className="w-full my-6 flex flex-row items-center justify-between">
+        <div className="w-full my-4 lg:my-6 flex flex-row items-center justify-between">
           <Button
             type="button"
             variant="outline"
