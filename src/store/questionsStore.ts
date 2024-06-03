@@ -63,7 +63,7 @@ export const useQuestionsStore = create<Store>()(persist((set, get) => ({
       newQuestions[questionIndex] = {
         ...questionInfo,
         answerSelected: indexAnswer,
-        otherAnswer
+        otherAnswer: otherAnswer?.trim().replace(/\s+/g, ' ') || ""
       };
     } else {
       // Cambiar informacion en la copia de la pregunta

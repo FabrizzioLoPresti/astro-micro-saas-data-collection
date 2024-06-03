@@ -9,3 +9,4 @@
 - [] Agregar Posthog para analiticas
 - [] Comprar dominio en Namecheap
 - [] Desplegar web en Cloudflare Pages
+- [] Debounce en el input de busqueda

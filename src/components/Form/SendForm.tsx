@@ -11,16 +11,20 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { Toaster, toast } from "sonner";
+import { useQuestionsStore } from "@/store/questionsStore";
 
 type Props = {};
 
 const formSchema = z.object({
   email: z.string().email({
-    message: "Por favor ingresa un email valido",
+    message: "Por favor ingresa un correo valido.",
   }),
 });
 
 const SendForm = (props: Props) => {
+  const questions = useQuestionsStore((state) => state.questions);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -30,9 +34,23 @@ const SendForm = (props: Props) => {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    let hasError = false;
+    questions.forEach((question) => {
+      if (
+        (!question.answerSelected && question.answerSelected !== 0) ||
+        (question.options[question.answerSelected] === "Otro" &&
+          !question.otherAnswer)
+      ) {
+        hasError = true;
+      }
+    });
+
+    if (hasError) {
+      return toast.error("Por favor completa todas las preguntas");
+    }
+
+    console.log("Formulario enviado");
+    hasError = false;
   }
 
   return (
@@ -46,7 +64,7 @@ const SendForm = (props: Props) => {
         </h3>
 
         <p className="text-center font-semibold">
-          Por favor ingresa tu email para recibir los resultados en tu correo
+          Por favor ingresa tu correo para recibir los resultados en tu correo
         </p>
         <FormField
           control={form.control}
@@ -57,9 +75,9 @@ const SendForm = (props: Props) => {
                 <Input placeholder="E-mail" type="email" {...field} />
               </FormControl>
               <FormDescription>
-                Ingresa un email valido para recibir los resultados
+                Ingresa un correo valido para recibir los resultados
               </FormDescription>
-              <FormMessage />
+              <FormMessage className="text-red-400" />
             </FormItem>
           )}
         />
@@ -67,6 +85,7 @@ const SendForm = (props: Props) => {
           Enviar
         </Button>
       </form>
+      <Toaster position="top-right" richColors />
     </Form>
   );
 };

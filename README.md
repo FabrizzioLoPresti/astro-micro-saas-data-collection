@@ -24,6 +24,7 @@ Translated with DeepL.com (free version)
 - React.js 18, TypeScript
 - TailwindCSS
 - Shadcn
+- Sonner (Toast Alerts)
 - Framer Motion, Motion One
 - React Hook Form, Zod
 - Zustand
