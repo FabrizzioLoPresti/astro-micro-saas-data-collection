@@ -7,6 +7,6 @@
   - [] Crear tabla en BD con las preguntas
   - [] Subir a Cloudflare DB o AstroDB
 - [] Agregar Posthog para analiticas
-- [] Comprar dominio en Namecheap
+- [] Comprar dominio en Cloudflare
 - [] Desplegar web en Cloudflare Pages
 - [] Debounce en el input de busqueda
