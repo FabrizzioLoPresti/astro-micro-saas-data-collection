@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Toaster, toast } from "sonner";
 import { useQuestionsStore } from "@/store/questionsStore";
+import { sendAnswers } from "@/services/questions";
 
 type Props = {};
 
@@ -33,7 +34,7 @@ const SendForm = (props: Props) => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     let hasError = false;
     questions.forEach((question) => {
       if (
@@ -49,7 +50,16 @@ const SendForm = (props: Props) => {
       return toast.error("Por favor completa todas las preguntas");
     }
 
-    console.log("Formulario enviado");
+    const data = {
+      email: values.email,
+      answers: questions.map((question) => ({
+        question_id: question.id,
+        option_id: question.answerSelected,
+        otherAnswer: question.otherAnswer,
+      })),
+    };
+    const res = await sendAnswers(data);
+    console.log(res);
     hasError = false;
   }
 
@@ -81,7 +91,7 @@ const SendForm = (props: Props) => {
             </FormItem>
           )}
         />
-        <Button className="mt-2 bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-900 transition-colors ease-in-out duration-300 w-full md:w-1/2 text-center self-start lg:self-center">
+        <Button className="mt-2 bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-900 transition-colors ease-in-out duration-300 w-full lg:w-1/2 text-center self-start lg:self-center">
           Enviar
         </Button>
       </form>
