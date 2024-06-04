@@ -6,6 +6,7 @@
   - [] Crear un archivo JSON con las preguntas
   - [] Crear tabla en BD con las preguntas
   - [] Subir a Cloudflare DB o AstroDB
+- [] Rate limit en el servidor para evitar ataques de DDOS en consultas API
 - [] Agregar Posthog para analiticas
 - [] Comprar dominio en Cloudflare
 - [] Desplegar web en Cloudflare Pages
