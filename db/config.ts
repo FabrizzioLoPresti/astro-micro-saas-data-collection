@@ -6,6 +6,7 @@ const Answers = defineTable({
   columns: {
     email: column.text({ primaryKey: true }),
     answers: column.json(),
+    createdAt: column.date(),
   },
 });
 

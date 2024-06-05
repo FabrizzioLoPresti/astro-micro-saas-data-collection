@@ -1,3 +1,4 @@
+import { db, Answers, NOW, like } from "astro:db";
 import type { APIRoute } from "astro";
 import { z } from "zod";
 
@@ -18,7 +19,10 @@ const answersSchema = z.object({
     z.object({
       question_id: z.number(),
       option_id: z.number().optional(),
-      otherAnswer: z.string().optional(),
+      otherAnswer: z
+        .string()
+        .max(100, "La respuesta no puede superar los 100 caracteres")
+        .optional(),
     })
   ),
 });
@@ -34,10 +38,28 @@ export const POST: APIRoute = async ({ params, request }) => {
       });
 
       // Validar si el mail ya existe en la BD
+      const userExists = await db
+        .select()
+        .from(Answers)
+        .where(like(Answers.email, email));
+
+      // TODO!: Cambiar parte del Catch para tomar error y poder utilizar Throw New Error
+      if (userExists.length) {
+        return response(
+          JSON.stringify({ message: "Ya has enviado tus respuestas" }),
+          {
+            status: 400,
+          }
+        );
+      }
 
       // Convertir las respuestas a un formato JSON
+      const answersJSON = JSON.stringify(answers);
 
       // Almacenar las respuestas en la BD junto al mail
+      await db
+        .insert(Answers)
+        .values({ email, answers: answersJSON, createdAt: NOW });
 
       // Enviar un mail con las respuestas y enlace de para generar Link de Mercadopago a nuestro endopoint de pago
 
