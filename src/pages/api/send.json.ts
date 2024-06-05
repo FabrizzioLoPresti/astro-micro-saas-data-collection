@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 
+const response = (body: string, {status, statusText, headers}: {status?: number, statusText?: string, headers?: HeadersInit}) => new Response(body, {status, statusText, headers});
+
 export const POST: APIRoute = async ({ params, request }) => {
   if (request.headers.get("Content-Type") === "application/json") {
     const {email, answers} = await request.json();
@@ -13,11 +15,7 @@ export const POST: APIRoute = async ({ params, request }) => {
 
     // Enviar un mail con las respuestas y enlace de para generar Link de Mercadopago a nuestro endopoint de pago
 
-    return new Response(JSON.stringify({
-      message: "Success",
-    }), {
-      status: 200
-    })
+    return response(JSON.stringify({message: "Respuestas enviadas"}), {status: 200});
   }
-  return new Response(null, { status: 400 });
+  return response(JSON.stringify({message: "Invalid request"}), {status: 400});
 }
