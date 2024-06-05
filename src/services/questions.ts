@@ -7,7 +7,6 @@ export const getAllQuestions = async () => {
 }
 
 export const sendAnswers = async (data: {email: string, answers: {question_id: number, option_id?: number, otherAnswer?: string}[]}) => {
-  console.log( data )
   const res = await fetch(`${import.meta.env.PUBLIC_API_URL}/api/send.json`, {
     method: "POST",
     headers: {
