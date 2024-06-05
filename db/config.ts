@@ -4,7 +4,7 @@ import { defineDb, defineTable, column  } from 'astro:db';
 
 const Answers = defineTable({
   columns: {
-    email: column.text(),
+    email: column.text({primaryKey: true}),
     answers: column.json(),
   }
 });
