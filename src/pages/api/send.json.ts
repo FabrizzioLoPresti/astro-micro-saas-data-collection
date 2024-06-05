@@ -1,4 +1,4 @@
-import { db, Answers, NOW, like } from "astro:db";
+import { db, Answers, NOW, eq } from "astro:db";
 import type { APIRoute } from "astro";
 import { z } from "zod";
 
@@ -41,7 +41,7 @@ export const POST: APIRoute = async ({ params, request }) => {
       const userExists = await db
         .select()
         .from(Answers)
-        .where(like(Answers.email, email));
+        .where(eq(Answers.email, email));
 
       // TODO!: Cambiar parte del Catch para tomar error y poder utilizar Throw New Error
       if (userExists.length) {
