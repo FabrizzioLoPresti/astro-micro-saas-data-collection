@@ -2,19 +2,17 @@ import { db, Answers, NOW, eq } from "astro:db";
 import type { APIRoute } from "astro";
 import { z } from "zod";
 
-const response = (
+const createResponse = (
   body: string,
   {
-    status,
+    status = 200,
     statusText,
     headers,
-  }: { status?: number; statusText?: string; headers?: HeadersInit }
+  }: { status?: number; statusText?: string; headers?: HeadersInit } = {}
 ) => new Response(body, { status, statusText, headers });
 
 const answersSchema = z.object({
-  email: z.string().email({
-    message: "Por favor ingresa un correo valido.",
-  }),
+  email: z.string().email("Por favor ingresa un correo válido."),
   answers: z.array(
     z.object({
       question_id: z.number(),
@@ -27,57 +25,57 @@ const answersSchema = z.object({
   ),
 });
 
-export const POST: APIRoute = async ({ params, request }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
-    if (request.headers.get("Content-Type") === "application/json") {
-      const body = await request.json();
-      const { email, answers } = answersSchema.parse(body);
-      console.log({
-        email,
-        answers,
-      });
-
-      // Validar si el mail ya existe en la BD
-      const userExists = await db
-        .select()
-        .from(Answers)
-        .where(eq(Answers.email, email));
-
-      // TODO!: Cambiar parte del Catch para tomar error y poder utilizar Throw New Error
-      if (userExists.length) {
-        return response(
-          JSON.stringify({ message: "Ya has enviado tus respuestas" }),
-          {
-            status: 400,
-          }
-        );
-      }
-
-      // Convertir las respuestas a un formato JSON
-      const answersJSON = JSON.stringify(answers);
-
-      // Almacenar las respuestas en la BD junto al mail
-      await db
-        .insert(Answers)
-        .values({ email, answers: answersJSON, createdAt: NOW });
-
-      // Enviar un mail con las respuestas y enlace de para generar Link de Mercadopago a nuestro endopoint de pago
-
-      return response(JSON.stringify({ message: "Respuestas enviadas" }), {
-        status: 200,
-      });
+    if (request.headers.get("Content-Type") !== "application/json") {
+      throw new Error("Content-Type no es application/json");
     }
-    return response(JSON.stringify({ message: "Invalid request" }), {
-      status: 400,
+
+    const body = await request.json();
+    const { email, answers } = answersSchema.parse(body);
+    console.log({
+      email,
+      answers,
+    });
+
+    // Validar si el mail ya existe en la BD
+    const userExists = await db
+      .select()
+      .from(Answers)
+      .where(eq(Answers.email, email));
+
+    if (userExists.length) {
+      throw new Error("Ya has enviado tus respuestas");
+    }
+
+    // Convertir las respuestas a un formato JSON
+    const answersJSON = JSON.stringify(answers);
+
+    // Almacenar las respuestas en la BD junto al mail
+    await db
+      .insert(Answers)
+      .values({ email, answers: answersJSON, createdAt: NOW });
+
+    // Enviar un mail con las respuestas y enlace de para generar Link de Mercadopago a nuestro endopoint de pago
+
+    return createResponse(JSON.stringify({ message: "Respuestas enviadas" }), {
+      status: 200,
     });
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-      return response(JSON.stringify({ message: error.errors[0].message }), {
-        status: 400,
-      });
+      return createResponse(
+        JSON.stringify({ message: error.errors[0].message }),
+        { status: 400 }
+      );
     }
-    return response(JSON.stringify({ message: "Error interno del servidor" }), {
-      status: 500,
-    });
+
+    return createResponse(
+      JSON.stringify({
+        message: error.message || "Error interno del servidor",
+      }),
+      {
+        status: error.message ? 400 : 500,
+      }
+    );
   }
 };
