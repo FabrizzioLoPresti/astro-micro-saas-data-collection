@@ -28,6 +28,7 @@ Translated with DeepL.com (free version)
 - Framer Motion, Motion One
 - React Hook Form, Zod
 - Zustand
+- Resend | Nodemailer
 - Vercel AI SDK | OpenAI GPT API
 - MercadoPago API
 - AstroDB | Supabase
