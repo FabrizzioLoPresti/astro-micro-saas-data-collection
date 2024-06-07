@@ -2,6 +2,11 @@ import { db, Answers, NOW, eq } from "astro:db";
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { Resend } from "resend";
+import { renderEmailTemplate } from "@/utils/renderTemplate";
+
+// TODO!
+// 1- Agregar Spinner o Mensaje de Error en el Formulario mientras se envían las respuestas
+// 2- Customizar el template de email para que reciba los datos del formulario, generar un link de MercadoPago enlazado a la API y enviarlo al usuario
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
@@ -59,12 +64,19 @@ export const POST: APIRoute = async ({ request }) => {
       .insert(Answers)
       .values({ email, answers: answersJSON, createdAt: NOW });
 
+    // Generar el HTML del correo utilizando el template de React
+    const emailHtml = renderEmailTemplate({
+      authorName: "Alex",
+      authorImage: "https://example.com/image.jpg",
+      reviewText: "This is a sample review text.",
+    });
+
     // Enviar un mail con las respuestas y enlace de para generar Link de Mercadopago a nuestro endopoint de pago
     const { data, error } = await resend.emails.send({
       from: "Acme <onboarding@resend.dev>",
       to: email,
       subject: "Hello World",
-      html: "<strong>It works!</strong>",
+      html: emailHtml,
     });
 
     if (error) {
