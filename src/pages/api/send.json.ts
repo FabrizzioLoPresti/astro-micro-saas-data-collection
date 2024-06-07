@@ -1,6 +1,9 @@
 import { db, Answers, NOW, eq } from "astro:db";
 import type { APIRoute } from "astro";
 import { z } from "zod";
+import { Resend } from "resend";
+
+const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
 const createResponse = (
   body: string,
@@ -57,6 +60,16 @@ export const POST: APIRoute = async ({ request }) => {
       .values({ email, answers: answersJSON, createdAt: NOW });
 
     // Enviar un mail con las respuestas y enlace de para generar Link de Mercadopago a nuestro endopoint de pago
+    const { data, error } = await resend.emails.send({
+      from: "Acme <onboarding@resend.dev>",
+      to: email,
+      subject: "Hello World",
+      html: "<strong>It works!</strong>",
+    });
+
+    if (error) {
+      throw new Error("Error al enviar el correo");
+    }
 
     return createResponse(JSON.stringify({ message: "Respuestas enviadas" }), {
       status: 200,

@@ -29,6 +29,7 @@ Translated with DeepL.com (free version)
 - React Hook Form, Zod
 - Zustand
 - Resend | Nodemailer
+- React Email (Templates)
 - Vercel AI SDK | OpenAI GPT API
 - MercadoPago API
 - AstroDB | Supabase
