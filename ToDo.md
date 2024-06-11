@@ -9,5 +9,7 @@
 - [] Rate limit en el servidor para evitar ataques de DDOS en consultas API
 - [] Agregar Posthog para analiticas
 - [] Comprar dominio en Cloudflare
+  - [] Generar email de dominio en Cloudflare y enlazar a Gmail
+  - [] Agregar Dominio a Resend
 - [] Desplegar web en Cloudflare Pages
 - [] Debounce en el input de busqueda

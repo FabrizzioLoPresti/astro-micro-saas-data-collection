@@ -6,7 +6,8 @@ import { renderEmailTemplate } from "@/utils/renderTemplate";
 
 // TODO!
 // 1- Agregar Spinner o Mensaje de Error en el Formulario mientras se envían las respuestas ✅
-// 2- Customizar el template de email para que reciba los datos del formulario, generar un link de MercadoPago enlazado a la API y enviarlo al usuario
+// 2- Customizar el template de email para que reciba los datos del formulario ✅
+// 3- Generar un link de MercadoPago enlazado a la API y enviarlo al usuario
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
@@ -39,9 +40,6 @@ export const POST: APIRoute = async ({ request }) => {
       throw new Error("Content-Type no es application/json");
     }
 
-    // Generar una promesa que se resuelva en 3 segundos
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
     const body = await request.json();
     const { email, answers } = answersSchema.parse(body);
     console.log({
@@ -69,16 +67,15 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Generar el HTML del correo utilizando el template de React
     const emailHtml = renderEmailTemplate({
-      authorName: "Alex",
-      authorImage: "https://example.com/image.jpg",
-      reviewText: "This is a sample review text.",
+      email,
+      mercadoPagoUrl: "https://www.mercadopago.com.ar",
     });
 
     // Enviar un mail con las respuestas y enlace de para generar Link de Mercadopago a nuestro endopoint de pago
     const { data, error } = await resend.emails.send({
       from: "Acme <onboarding@resend.dev>",
       to: email,
-      subject: "Hello World",
+      subject: "Gracias por completar el formulario",
       html: emailHtml,
     });
 

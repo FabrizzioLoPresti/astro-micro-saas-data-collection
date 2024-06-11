@@ -1,6 +1,5 @@
 // renderTemplate.ts
 import ReactDOMServer from "react-dom/server";
-
 import {
   Body,
   Button,
@@ -8,7 +7,6 @@ import {
   Head,
   Hr,
   Html,
-  Img,
   Link,
   Preview,
   Row,
@@ -17,27 +15,12 @@ import {
 } from "@react-email/components";
 
 interface EmailTemplateProps {
-  authorName?: string;
-  authorImage?: string;
-  reviewText?: string;
+  email?: string;
+  mercadoPagoUrl?: string;
 }
 
-interface EmailTemplateProps {
-  authorName?: string;
-  authorImage?: string;
-  reviewText?: string;
-}
-
-const baseUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "";
-
-const EmailTemplate = ({
-  authorName,
-  authorImage,
-  reviewText,
-}: EmailTemplateProps) => {
-  const previewText = `Read ${authorName}'s review`;
+const EmailTemplate = ({ email, mercadoPagoUrl }: EmailTemplateProps) => {
+  const previewText = `Gracias ${email} por tu respuesta!`;
 
   return (
     <Html>
@@ -46,33 +29,23 @@ const EmailTemplate = ({
 
       <Body style={main}>
         <Container style={container}>
-          <Section>
-            <Img src={``} width="96" height="30" alt="Airbnb" />
-          </Section>
-          <Section>
-            <Img
-              src={authorImage}
-              width="96"
-              height="96"
-              alt={authorName}
-              style={userImage}
-            />
-          </Section>
           <Section style={{ paddingBottom: "20px" }}>
             <Row>
-              <Text style={heading}>Here's what {authorName} wrote</Text>
-              <Text style={review}>{reviewText}</Text>
+              <Text style={heading}>¡Gracias por tu respuesta!</Text>
               <Text style={paragraph}>
-                Now that the review period is over, we’ve posted {authorName}
-                ’s review to your Airbnb profile.
+                Apreciamos mucho el tiempo que te tomaste para completar nuestro
+                formulario. Para seguir ofreciéndote el mejor servicio, te
+                invitamos a recibir una respuesta generada por IA sobre cómo
+                llevar adelante un nuevo negocio basado en tus respuestas.
               </Text>
-              <Text style={{ ...paragraph, paddingBottom: "16px" }}>
-                While it’s too late to write a review of your own, you can send
-                your feedback to {authorName} using your Airbnb message thread.
+              <Text style={paragraph}>
+                Si deseas recibir esta información en tu correo electrónico, haz
+                clic en el botón de abajo que te llevará a un enlace de Mercado
+                Pago para completar el proceso de pago.
               </Text>
 
-              <Button style={button} href="https://airbnb.com/">
-                Send My Feedback
+              <Button style={button} href={mercadoPagoUrl} target="_blank">
+                Obtener Ideas de Negocios
               </Button>
             </Row>
           </Section>
@@ -81,30 +54,13 @@ const EmailTemplate = ({
 
           <Section>
             <Row>
-              <Text style={{ ...paragraph, fontWeight: "700" }}>
-                Common questions
-              </Text>
-              <Text>
-                <Link href="https://airbnb.com/help/article/13" style={link}>
-                  How do reviews work?
-                </Link>
-              </Text>
-              <Text>
-                <Link href="https://airbnb.com/help/article/1257" style={link}>
-                  How do star ratings work?
-                </Link>
-              </Text>
-              <Text>
-                <Link href="https://airbnb.com/help/article/995" style={link}>
-                  Can I leave a review after 14 days?
-                </Link>
-              </Text>
-              <Hr style={hr} />
               <Text style={footer}>
-                Airbnb, Inc., 888 Brannan St, San Francisco, CA 94103
+                Muchas gracias por confiar en nosotros. Si tienes alguna
+                pregunta, no dudes en contactarnos.
               </Text>
-              <Link href="https://airbnb.com" style={reportLink}>
-                Report unsafe behavior
+              <Text style={footer}>Micro-SaaS Ideas, Córdoba Argentina</Text>
+              <Link href="[Enlace a la página de contacto]" style={reportLink}>
+                Contactar Soporte
               </Link>
             </Row>
           </Section>
@@ -113,15 +69,6 @@ const EmailTemplate = ({
     </Html>
   );
 };
-
-EmailTemplate.PreviewProps = {
-  authorName: "Alex",
-  authorImage: `${baseUrl}/static/airbnb-review-user.jpg`,
-  reviewText: `“Alan was a great guest! Easy communication, the apartment was left
-    in great condition, very polite, and respectful of all house rules.
-    He’s welcome back anytime and would easily recommend him to any
-    host!”`,
-} as EmailTemplateProps;
 
 export const renderEmailTemplate = (props: EmailTemplateProps) => {
   return ReactDOMServer.renderToStaticMarkup(<EmailTemplate {...props} />);
@@ -141,12 +88,6 @@ const container = {
   maxWidth: "100%",
 };
 
-const userImage = {
-  margin: "0 auto",
-  marginBottom: "16px",
-  borderRadius: "50%",
-};
-
 const heading = {
   fontSize: "32px",
   lineHeight: "1.3",
@@ -160,15 +101,8 @@ const paragraph = {
   color: "#484848",
 };
 
-const review = {
-  ...paragraph,
-  padding: "24px",
-  backgroundColor: "#f2f3f3",
-  borderRadius: "4px",
-};
-
 const button = {
-  backgroundColor: "#ff5a5f",
+  backgroundColor: "rgb(30, 64, 175)",
   borderRadius: "3px",
   color: "#fff",
   fontSize: "18px",
@@ -178,12 +112,6 @@ const button = {
   textAlign: "center" as const,
   display: "block",
   width: "100%",
-};
-
-const link = {
-  ...paragraph,
-  color: "#ff5a5f",
-  display: "block",
 };
 
 const reportLink = {
