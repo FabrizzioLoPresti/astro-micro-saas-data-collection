@@ -7,6 +7,7 @@
   - [] Crear tabla en BD con las preguntas
   - [] Subir a Cloudflare DB o AstroDB
 - [] Rate limit en el servidor para evitar ataques de DDOS en consultas API
+- [] Obtener Cobro desde MercadoPago Webhook
 - [] Agregar Posthog para analiticas
 - [] Comprar dominio en Cloudflare
   - [] Generar email de dominio en Cloudflare y enlazar a Gmail
