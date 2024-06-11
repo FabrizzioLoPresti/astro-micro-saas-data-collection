@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -11,6 +12,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import Spinner from "@/components/Layout/Spinner";
 import { Toaster, toast } from "sonner";
 import { useQuestionsStore } from "@/store/questionsStore";
 import { sendAnswers } from "@/services/questions";
@@ -24,6 +26,8 @@ const formSchema = z.object({
 });
 
 const SendForm = (props: Props) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
   const questions = useQuestionsStore((state) => state.questions);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -36,6 +40,7 @@ const SendForm = (props: Props) => {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     let hasError = false;
+    setIsLoading(true);
     questions.forEach((question) => {
       if (
         (!question.answerSelected && question.answerSelected !== 0) ||
@@ -47,6 +52,7 @@ const SendForm = (props: Props) => {
     });
 
     if (hasError) {
+      setIsLoading(false);
       return toast.error("Por favor completa todas las preguntas");
     }
 
@@ -58,8 +64,10 @@ const SendForm = (props: Props) => {
         otherAnswer: question.otherAnswer,
       })),
     };
-    const res = await sendAnswers(data);
-    console.log(res);
+    const { message } = await sendAnswers(data);
+
+    setMessage(message);
+    setIsLoading(false);
     hasError = false;
   }
 
@@ -91,9 +99,16 @@ const SendForm = (props: Props) => {
             </FormItem>
           )}
         />
-        <Button className="mt-2 bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-900 transition-colors ease-in-out duration-300 w-full lg:w-1/2 text-center self-start lg:self-center">
+
+        {message && <p className="text-center font-semibold">{message}</p>}
+
+        <Button
+          className="mt-2 bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-900 transition-colors ease-in-out duration-300 w-full lg:w-1/2 text-center self-start lg:self-center disabled:opacity-70 disabled:cursor-not-allowed"
+          disabled={isLoading}
+        >
           Enviar
         </Button>
+        {isLoading && <Spinner />}
       </form>
       <Toaster position="top-right" richColors />
     </Form>

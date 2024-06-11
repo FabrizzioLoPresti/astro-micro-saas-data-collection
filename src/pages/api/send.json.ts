@@ -5,7 +5,7 @@ import { Resend } from "resend";
 import { renderEmailTemplate } from "@/utils/renderTemplate";
 
 // TODO!
-// 1- Agregar Spinner o Mensaje de Error en el Formulario mientras se envían las respuestas
+// 1- Agregar Spinner o Mensaje de Error en el Formulario mientras se envían las respuestas ✅
 // 2- Customizar el template de email para que reciba los datos del formulario, generar un link de MercadoPago enlazado a la API y enviarlo al usuario
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
@@ -38,6 +38,9 @@ export const POST: APIRoute = async ({ request }) => {
     if (request.headers.get("Content-Type") !== "application/json") {
       throw new Error("Content-Type no es application/json");
     }
+
+    // Generar una promesa que se resuelva en 3 segundos
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const body = await request.json();
     const { email, answers } = answersSchema.parse(body);
@@ -83,9 +86,12 @@ export const POST: APIRoute = async ({ request }) => {
       throw new Error("Error al enviar el correo");
     }
 
-    return createResponse(JSON.stringify({ message: "Respuestas enviadas" }), {
-      status: 200,
-    });
+    return createResponse(
+      JSON.stringify({ message: "Respuestas enviadas correctamente" }),
+      {
+        status: 200,
+      }
+    );
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return createResponse(
