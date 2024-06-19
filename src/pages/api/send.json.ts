@@ -3,13 +3,17 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { Resend } from "resend";
 import { renderEmailTemplate } from "@/utils/renderTemplate";
+import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 
 // TODO!
 // 1- Agregar Spinner o Mensaje de Error en el Formulario mientras se envían las respuestas ✅
 // 2- Customizar el template de email para que reciba los datos del formulario ✅
 // 3- Generar un link de MercadoPago enlazado a la API y enviarlo al usuario
 
-const resend = new Resend(import.meta.env.RESEND_API_KEY);
+const resendClient = new Resend(import.meta.env.RESEND_API_KEY);
+const mercadoPagoClient = new MercadoPagoConfig({
+  accessToken: import.meta.env.MERCADOPAGO_API_KEY,
+});
 
 const createResponse = (
   body: string,
@@ -57,22 +61,29 @@ export const POST: APIRoute = async ({ request }) => {
       throw new Error("Ya has enviado tus respuestas");
     }
 
-    // Convertir las respuestas a un formato JSON
-    const answersJSON = JSON.stringify(answers);
-
-    // Almacenar las respuestas en la BD junto al mail
-    await db
-      .insert(Answers)
-      .values({ email, answers: answersJSON, createdAt: NOW });
+    // Generar enlace de MercadoPago (pasar al cliente en lo posible por time execution limit de funciones serverless de Vercel)
+    const preference = await new Preference(mercadoPagoClient).create({
+      body: {
+        items: [
+          {
+            id: "respuesta_ia",
+            title: "Respuesta IA",
+            quantity: 1,
+            unit_price: 500,
+          },
+        ],
+      },
+    });
+    const urlMercadoPago = preference.sandbox_init_point!;
 
     // Generar el HTML del correo utilizando el template de React
     const emailHtml = renderEmailTemplate({
       email,
-      mercadoPagoUrl: "https://www.mercadopago.com.ar",
+      mercadoPagoUrl: urlMercadoPago,
     });
 
-    // Enviar un mail con las respuestas y enlace de para generar Link de Mercadopago a nuestro endopoint de pago
-    const { data, error } = await resend.emails.send({
+    // Enviar el correo con Resend incluyendo el HTML generado y enlace de MercadoPago
+    const { data, error } = await resendClient.emails.send({
       from: "Acme <onboarding@resend.dev>",
       to: email,
       subject: "Gracias por completar el formulario",
@@ -82,6 +93,14 @@ export const POST: APIRoute = async ({ request }) => {
     if (error) {
       throw new Error("Error al enviar el correo");
     }
+
+    // Convertir las respuestas a un formato JSON
+    const answersJSON = JSON.stringify(answers);
+
+    // Almacenar las respuestas en la BD junto al mail
+    await db
+      .insert(Answers)
+      .values({ email, answers: answersJSON, createdAt: NOW });
 
     return createResponse(
       JSON.stringify({ message: "Respuestas enviadas correctamente" }),
